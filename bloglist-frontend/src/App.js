@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import ListOfBlogs from './components/ListOfBlogs'
+import UserView from './components/UserView'
 import LoginForm from './components/LoginForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -16,6 +16,14 @@ const App = () => {
     )  
   }, [])
 
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+    }
+  }, [])
+
   const handleLogin = async event => {
     event.preventDefault()
 
@@ -26,6 +34,9 @@ const App = () => {
         username, password,
       })
 
+      window.localStorage.setItem(
+        'loggedBloglistUser', JSON.stringify(user)
+      )
       setUser(user)
       setUsername('')
       setPassword('')
@@ -33,6 +44,15 @@ const App = () => {
     } catch {
       console.log('login error')
     }
+  }
+  
+  const handleLogout = async event => {
+    event.preventDefault()
+
+    console.log('log out:', username, password)
+
+    window.localStorage.removeItem('loggedBloglistUser')
+    setUser(null)
   }
 
   const handleUsernameChange = ({ target }) => setUsername(target.value)
@@ -50,7 +70,9 @@ const App = () => {
             handlePasswordChange={handlePasswordChange}
             handleUsernameChange={handleUsernameChange}
           />
-        : <ListOfBlogs
+        : <UserView
+            user={user}
+            handleLogout={handleLogout}
             blogs={blogs}
           />
       }
