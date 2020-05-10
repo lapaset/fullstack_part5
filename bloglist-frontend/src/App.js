@@ -9,6 +9,10 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -21,6 +25,7 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
+      console.log('user set at restart:', user)
     }
   }, [])
 
@@ -55,8 +60,43 @@ const App = () => {
     setUser(null)
   }
 
+  const handleCreate = async event => {
+    event.preventDefault()
+
+    try {
+      const blogObject = {
+        title: title,
+        author: author,
+        url: url
+      }
+
+      blogService.setToken(user.token)
+      console.log('create new', title, author, url, user)
+      await blogService.createBlog(blogObject)
+      
+      try {
+        const blogs = await blogService.getAll()
+        setBlogs( blogs )
+      } catch (exception) {
+        setErrorMessage('could not fetch blogs')
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 3000)
+      }
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+    } catch (exception) {
+      console.log('error creating new blog:', exception)
+    }
+  }
+
   const handleUsernameChange = ({ target }) => setUsername(target.value)
   const handlePasswordChange = ({ target }) => setPassword(target.value)
+
+  const handleTitleChange = ({ target }) => setTitle(target.value)
+  const handleAuthorChange = ({ target }) => setAuthor(target.value)
+  const handleUrlChange = ({ target }) => setUrl(target.value)
 
   return (
     <main>
@@ -74,6 +114,13 @@ const App = () => {
             user={user}
             handleLogout={handleLogout}
             blogs={blogs}
+            handleCreate={handleCreate}
+            title={title}
+            handleTitleChange={handleTitleChange}
+            author={author}
+            handleAuthorChange={handleAuthorChange}
+            url={url}
+            handleUrlChange={handleUrlChange}
           />
       }
 
