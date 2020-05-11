@@ -13,6 +13,7 @@ const App = () => {
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
+  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -29,9 +30,22 @@ const App = () => {
     }
   }, [])
 
+  const displayError = message => {
+    setErrorMessage(message)
+    setTimeout(() => {
+      setErrorMessage(null)
+    }, 5000)
+  }
+
+  const displayNotification = message => {
+    setNotification(message)
+    setTimeout(() => {
+      setNotification(null)
+    }, 5000)
+  }
+
   const handleLogin = async event => {
     event.preventDefault()
-
     console.log('login:', username, password)
 
     try {
@@ -45,19 +59,20 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-      console.log('logged in', user)
+      displayNotification(`Logged in as ${user.username}`)
+
     } catch {
-      console.log('login error')
+      displayError('Invalid username or password')
     }
   }
   
   const handleLogout = async event => {
     event.preventDefault()
-
     console.log('log out:', username, password)
 
     window.localStorage.removeItem('loggedBloglistUser')
     setUser(null)
+    displayNotification('Logged out')
   }
 
   const handleCreate = async event => {
@@ -69,25 +84,36 @@ const App = () => {
         author: author,
         url: url
       }
-
-      blogService.setToken(user.token)
       console.log('create new', title, author, url, user)
+      blogService.setToken(user.token)
+
       await blogService.createBlog(blogObject)
-      
-      try {
-        const blogs = await blogService.getAll()
-        setBlogs( blogs )
-      } catch (exception) {
-        setErrorMessage('could not fetch blogs')
-        setTimeout(() => {
-          setErrorMessage(null)
-        }, 3000)
-      }
+      displayNotification(`A new blog ${title} by ${author} added`)
+
       setTitle('')
       setAuthor('')
       setUrl('')
+
     } catch (exception) {
-      console.log('error creating new blog:', exception)
+      const error = exception.response.data.error
+      console.log(error)
+
+      if (error.includes('`title` is required') && error.includes('`url` is required'))
+        displayError('title and url are missing')
+      else if (error.includes('`title` is required'))
+        displayError('title is missing')
+      else if (error.includes('`url` is required'))
+        displayError('url is missing')
+      else
+        displayError(error)
+    }
+
+    try {
+      const blogs = await blogService.getAll()
+      setBlogs( blogs )
+
+    } catch (exception) {
+      setErrorMessage('could not fetch blogs') 
     }
   }
 
@@ -98,9 +124,33 @@ const App = () => {
   const handleAuthorChange = ({ target }) => setAuthor(target.value)
   const handleUrlChange = ({ target }) => setUrl(target.value)
 
+  const ErrorField = ({ message }) => {
+    return message === null
+      ? null
+      : <div className="errorField">
+          Error: {message}
+        </div>
+  }
+
+  const NotificationField = ({ message }) => {
+    return message === null
+      ? null
+      : <div className="notificationField">
+          {message}
+      </div>
+  }
+
   return (
     <main>
       <h1>Bloglist</h1>
+
+      <ErrorField
+        message={errorMessage}
+      />
+
+      <NotificationField
+        message={notification}
+      />
 
       {user === null
         ? <LoginForm
