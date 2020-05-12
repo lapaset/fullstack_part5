@@ -9,9 +9,6 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
   const [notification, setNotification] = useState(null)
 
@@ -26,6 +23,7 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
+      blogService.setToken(user.token)
       console.log('user set at restart:', user)
     }
   }, [])
@@ -75,28 +73,13 @@ const App = () => {
     displayNotification('Logged out')
   }
 
-  const handleCreate = async event => {
-    event.preventDefault()
-
+  const addBlog = async (blogObject) => {
     try {
-      const blogObject = {
-        title: title,
-        author: author,
-        url: url
-      }
-      console.log('create new', title, author, url, user)
-      blogService.setToken(user.token)
-
       await blogService.createBlog(blogObject)
-      displayNotification(`A new blog ${title} by ${author} added`)
-
-      setTitle('')
-      setAuthor('')
-      setUrl('')
+      displayNotification(`A new blog ${blogObject.title} by ${blogObject.author} added`)
 
     } catch (exception) {
       const error = exception.response.data.error
-      console.log(error)
 
       if (error.includes('`title` is required') && error.includes('`url` is required'))
         displayError('title and url are missing')
@@ -109,9 +92,8 @@ const App = () => {
     }
 
     try {
-      const blogs = await blogService.getAll()
-      setBlogs( blogs )
-
+        const blogs = await blogService.getAll()
+        setBlogs( blogs )
     } catch (exception) {
       setErrorMessage('could not fetch blogs') 
     }
@@ -119,10 +101,6 @@ const App = () => {
 
   const handleUsernameChange = ({ target }) => setUsername(target.value)
   const handlePasswordChange = ({ target }) => setPassword(target.value)
-
-  const handleTitleChange = ({ target }) => setTitle(target.value)
-  const handleAuthorChange = ({ target }) => setAuthor(target.value)
-  const handleUrlChange = ({ target }) => setUrl(target.value)
 
   const ErrorField = ({ message }) => {
     return message === null
@@ -164,13 +142,7 @@ const App = () => {
             user={user}
             handleLogout={handleLogout}
             blogs={blogs}
-            handleCreate={handleCreate}
-            title={title}
-            handleTitleChange={handleTitleChange}
-            author={author}
-            handleAuthorChange={handleAuthorChange}
-            url={url}
-            handleUrlChange={handleUrlChange}
+            createBlog={addBlog}          
           />
       }
 

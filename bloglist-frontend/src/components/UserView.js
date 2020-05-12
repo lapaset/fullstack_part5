@@ -10,19 +10,12 @@ const UserHeader = ({ user, handleLogout }) => (
   </header>
 )
 
-const UserView = ({ user, handleLogout, blogs, handleCreate, title,
-  handleTitleChange, author, handleAuthorChange, url, handleUrlChange }) => {
+const UserView = ({ user, handleLogout, blogs, createBlog }) => {
   
     const createForm = () => (
       <Togglable buttonLabel={'new note'}>
         <CreateBlogForm
-        handleCreate={handleCreate}
-        title={title}
-        handleTitleChange={handleTitleChange}
-        author={author}
-        handleAuthorChange={handleAuthorChange}
-        url={url}
-        handleUrlChange={handleUrlChange}
+          createBlog={createBlog}
         />
       </Togglable>
     )
