@@ -1,9 +1,9 @@
 import React from 'react'
 import Togglable from './Togglable'
 
-const Blog = ({ blog, addLike }) => {
+const Blog = ({ blog, addLike, deleteBlog, user }) => {
 
-  const handleLike = event => {
+  const handleLike = () => {
     addLike(blog.id, {
       likes: ++blog.likes,
       author: blog.author,
@@ -12,6 +12,17 @@ const Blog = ({ blog, addLike }) => {
       user: blog.user,
     })
   }
+
+  const handleDelete = () => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`))
+    deleteBlog(blog.id)
+  }
+
+  const removeButton = () => (
+    <button onClick={handleDelete}>remove</button>
+  )
+
+  console.log('user at blog', user.username, 'blog creator:', blog.user.username)
 
   return (
   <li className="blog">
@@ -23,9 +34,13 @@ const Blog = ({ blog, addLike }) => {
         {blog.likes}
         <button onClick={handleLike}>like</button><br />
         {blog.user.name}<br />
+        
+        {user.username === blog.user.username && removeButton()}
+
       </p>
     </Togglable>
   </li>
 )}
 
 export default Blog
+

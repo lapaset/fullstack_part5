@@ -16,4 +16,9 @@
 .blog {
   border-style: solid;
   border-width: 1px 0px 0px 0px;
+  padding: 2px;
+}
+
+ul {
+  list-style: none;
 }

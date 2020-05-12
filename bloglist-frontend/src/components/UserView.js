@@ -10,7 +10,7 @@ const UserHeader = ({ user, handleLogout }) => (
   </header>
 )
 
-const UserView = ({ user, handleLogout, blogs, createBlog, createFormRef, addLike }) => {
+const UserView = ({ user, handleLogout, blogs, createBlog, createFormRef, addLike, deleteBlog }) => {
 
     const createForm = () => (
       <Togglable 
@@ -32,7 +32,9 @@ const UserView = ({ user, handleLogout, blogs, createBlog, createFormRef, addLik
       
       <ListOfBlogs
         blogs={blogs}
-        addLike={addLike} />
+        addLike={addLike}
+        deleteBlog={deleteBlog}
+        user={user} />
     </div>
 )}
 

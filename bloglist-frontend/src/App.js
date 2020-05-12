@@ -42,6 +42,15 @@ const App = () => {
     }, 5000)
   }
 
+  const refreshBlogs = async () => {
+    try {
+      const blogs = await blogService.getAll()
+      setBlogs( blogs )
+    } catch (exception) {
+      setErrorMessage('could not fetch blogs') 
+    }
+  }
+
   const handleLogin = async event => {
     event.preventDefault()
     console.log('login:', username, password)
@@ -94,12 +103,7 @@ const App = () => {
         displayError(error)
     }
     
-    try {
-      const blogs = await blogService.getAll()
-      setBlogs( blogs )
-    } catch (exception) {
-      setErrorMessage('could not fetch blogs') 
-    }
+    refreshBlogs()
   }
 
   const addLike = async (id, blogObject) => {
@@ -108,12 +112,17 @@ const App = () => {
     } catch (exception) {
       setErrorMessage('could not add like')
     }
+
+    refreshBlogs()
+  }
+
+  const deleteBlog = async (id) => {
     try {
-      const blogs = await blogService.getAll()
-      setBlogs( blogs )
+      await blogService.deleteBlog(id)
     } catch (exception) {
-      setErrorMessage('could not fetch blogs') 
+      console.log('failed to delete blog', exception)
     }
+    refreshBlogs()
   }
 
   const handleUsernameChange = ({ target }) => setUsername(target.value)
@@ -161,7 +170,8 @@ const App = () => {
             blogs={blogs}
             createBlog={addBlog}
             createFormRef={createFormRef}
-            addLike={addLike}      
+            addLike={addLike}
+            deleteBlog={deleteBlog}   
           />
       }
 

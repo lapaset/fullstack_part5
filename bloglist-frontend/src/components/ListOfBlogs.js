@@ -1,7 +1,7 @@
 import React from 'react'
 import Blog from './Blog'
 
-const ListOfBlogs = ({ blogs, addLike }) => (
+const ListOfBlogs = ({ blogs, addLike, deleteBlog, user }) => (
   <main>
     <h2>Blogs</h2>
     <ul>
@@ -11,7 +11,9 @@ const ListOfBlogs = ({ blogs, addLike }) => (
           <Blog
             key={b.id}
             blog={b}
-            addLike={addLike} />
+            addLike={addLike}
+            deleteBlog={deleteBlog}
+            user={user} />
         )}
     </ul>
   </main>
