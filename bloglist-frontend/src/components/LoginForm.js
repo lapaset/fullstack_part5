@@ -1,8 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
 import InputField from './InputField'
 
-const LoginForm = ({ username, password, handleLogin, handlePasswordChange, handleUsernameChange }) => (
-  <form onSubmit={handleLogin}>
+const LoginForm = ({ handleLogin }) => {
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+
+  const handleUsernameChange = ({ target }) => setUsername(target.value)
+  const handlePasswordChange = ({ target }) => setPassword(target.value)
+  
+  const handleSubmit = event => {
+    event.preventDefault()
+    handleLogin({
+      username, password,
+    })
+    setUsername('')
+    setPassword('')
+  }
+
+  return (
+  <form onSubmit={handleSubmit}>
     <h2>Log in</h2>
     <InputField
       type="text"
@@ -18,6 +34,6 @@ const LoginForm = ({ username, password, handleLogin, handlePasswordChange, hand
     />
     <button type="submit">login</button>
   </form>
-)
+)}
 
 export default LoginForm

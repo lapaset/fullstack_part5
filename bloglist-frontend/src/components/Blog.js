@@ -22,8 +22,6 @@ const Blog = ({ blog, addLike, deleteBlog, user }) => {
     <button onClick={handleDelete}>remove</button>
   )
 
-  console.log('user at blog', user.username, 'blog creator:', blog.user.username)
-
   return (
   <li className="blog">
     {blog.title} {blog.author}

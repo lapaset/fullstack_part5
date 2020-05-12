@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import UserView from './components/UserView'
 import LoginForm from './components/LoginForm'
+import ErrorField from './components/ErrorField'
+import NotificationField from './components/NotificationField'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
   const [notification, setNotification] = useState(null)
@@ -29,6 +29,7 @@ const App = () => {
   }, [])
 
   const displayError = message => {
+    setNotification(null)
     setErrorMessage(message)
     setTimeout(() => {
       setErrorMessage(null)
@@ -36,6 +37,7 @@ const App = () => {
   }
 
   const displayNotification = message => {
+    setErrorMessage(null)
     setNotification(message)
     setTimeout(() => {
       setNotification(null)
@@ -46,26 +48,21 @@ const App = () => {
     try {
       const blogs = await blogService.getAll()
       setBlogs( blogs )
+
     } catch (exception) {
       setErrorMessage('could not fetch blogs') 
     }
   }
 
-  const handleLogin = async event => {
-    event.preventDefault()
-    console.log('login:', username, password)
-
+  const handleLogin = async userObject => {
     try {
-      const user = await loginService.login({
-        username, password,
-      })
+      const user = await loginService.login(userObject)
 
       window.localStorage.setItem(
         'loggedBloglistUser', JSON.stringify(user)
       )
       setUser(user)
-      setUsername('')
-      setPassword('')
+      blogService.setToken(user.token)
       displayNotification(`Logged in as ${user.username}`)
 
     } catch {
@@ -75,7 +72,6 @@ const App = () => {
   
   const handleLogout = async event => {
     event.preventDefault()
-    console.log('log out:', username, password)
 
     window.localStorage.removeItem('loggedBloglistUser')
     setUser(null)
@@ -110,7 +106,8 @@ const App = () => {
     try {
       await blogService.updateBlog(id, blogObject)
     } catch (exception) {
-      setErrorMessage('could not add like')
+      setErrorMessage('failed to like')
+      console.log(exception)
     }
 
     refreshBlogs()
@@ -120,28 +117,11 @@ const App = () => {
     try {
       await blogService.deleteBlog(id)
     } catch (exception) {
-      console.log('failed to delete blog', exception)
+      setErrorMessage('failed to delete blog')
+      console.log(exception)
     }
+
     refreshBlogs()
-  }
-
-  const handleUsernameChange = ({ target }) => setUsername(target.value)
-  const handlePasswordChange = ({ target }) => setPassword(target.value)
-
-  const ErrorField = ({ message }) => {
-    return message === null
-      ? null
-      : <div className="errorField">
-          Error: {message}
-        </div>
-  }
-
-  const NotificationField = ({ message }) => {
-    return message === null
-      ? null
-      : <div className="notificationField">
-          {message}
-      </div>
   }
 
   return (
@@ -158,11 +138,7 @@ const App = () => {
 
       {user === null
         ? <LoginForm
-            username={username}
-            password={password}
             handleLogin={handleLogin}
-            handlePasswordChange={handlePasswordChange}
-            handleUsernameChange={handleUsernameChange}
           />
         : <UserView
             user={user}
