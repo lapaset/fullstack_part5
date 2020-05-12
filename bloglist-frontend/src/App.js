@@ -73,7 +73,10 @@ const App = () => {
     displayNotification('Logged out')
   }
 
+  const createFormRef = React.createRef()
+
   const addBlog = async (blogObject) => {
+    createFormRef.current.toggleVisibility()
     try {
       await blogService.createBlog(blogObject)
       displayNotification(`A new blog ${blogObject.title} by ${blogObject.author} added`)
@@ -90,10 +93,24 @@ const App = () => {
       else
         displayError(error)
     }
-
+    
     try {
-        const blogs = await blogService.getAll()
-        setBlogs( blogs )
+      const blogs = await blogService.getAll()
+      setBlogs( blogs )
+    } catch (exception) {
+      setErrorMessage('could not fetch blogs') 
+    }
+  }
+
+  const addLike = async (id, blogObject) => {
+    try {
+      await blogService.updateBlog(id, blogObject)
+    } catch (exception) {
+      setErrorMessage('could not add like')
+    }
+    try {
+      const blogs = await blogService.getAll()
+      setBlogs( blogs )
     } catch (exception) {
       setErrorMessage('could not fetch blogs') 
     }
@@ -142,7 +159,9 @@ const App = () => {
             user={user}
             handleLogout={handleLogout}
             blogs={blogs}
-            createBlog={addBlog}          
+            createBlog={addBlog}
+            createFormRef={createFormRef}
+            addLike={addLike}      
           />
       }
 
