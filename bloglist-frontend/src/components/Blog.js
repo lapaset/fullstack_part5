@@ -24,13 +24,13 @@ const Blog = ({ blog, addLike, deleteBlog, user }) => {
 
   return (
   <li className="blog">
-    {blog.title} {blog.author}
+    <span className="blogDefaults">{blog.title} {blog.author}</span>
 
     <Togglable buttonLabel="view" closeButtonLabel="hide">
       <p>
         {blog.url}<br />
-        {blog.likes}
-        <button onClick={handleLike}>like</button><br />
+        likes: {blog.likes}
+        <button onClick={handleLike} className="likeButton">like</button><br />
         {blog.user.name}<br />
         
         {user.username === blog.user.username && removeButton()}

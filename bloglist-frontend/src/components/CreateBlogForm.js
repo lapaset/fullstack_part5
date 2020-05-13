@@ -24,28 +24,28 @@ const CreateBlogForm = ({ createBlog }) => {
     const handleUrlChange = ({ target }) => setUrl(target.value)
   
     return (
-    <form onSubmit={handleCreate}>
-      <h2>Create new</h2>
-      <InputField
-        type="text"
-        name="Title"
-        value={title}
-        onChange={handleTitleChange} 
-      />
-      <InputField
-        type="text"
-        name="Author"
-        value={author}
-        onChange={handleAuthorChange}
-      />
-      <InputField
-        type="text"
-        name="Url"
-        value={url}
-        onChange={handleUrlChange}
-      />  
-      <button type="submit">create</button>
-    </form>
+      <form onSubmit={handleCreate} className="createBlogForm">
+        <h2>Create new</h2>
+        <InputField
+          type="text"
+          name="Title"
+          value={title}
+          onChange={handleTitleChange} 
+        />
+        <InputField
+          type="text"
+          name="Author"
+          value={author}
+          onChange={handleAuthorChange}
+        />
+        <InputField
+          type="text"
+          name="Url"
+          value={url}
+          onChange={handleUrlChange}
+        />  
+        <button type="submit">create</button>
+      </form>
 )}
 
 export default CreateBlogForm
