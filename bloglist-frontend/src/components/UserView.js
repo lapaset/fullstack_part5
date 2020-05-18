@@ -13,7 +13,8 @@ const UserHeader = ({ user, handleLogout }) => (
 const UserView = ({ user, handleLogout, blogs, createBlog, createFormRef, addLike, deleteBlog }) => {
 
     const createForm = () => (
-      <Togglable 
+      <Togglable
+        buttonId={'new-note-button'}
         buttonLabel={'new note'} 
         closeButtonLabel={'cancel'}
         ref={createFormRef} >
@@ -31,6 +32,7 @@ const UserView = ({ user, handleLogout, blogs, createBlog, createFormRef, addLik
       {createForm()}
       
       <ListOfBlogs
+        id="user-blogs"
         blogs={blogs}
         addLike={addLike}
         deleteBlog={deleteBlog}

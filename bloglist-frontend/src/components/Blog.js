@@ -19,23 +19,30 @@ const Blog = ({ blog, addLike, deleteBlog, user }) => {
   }
 
   const removeButton = () => (
-    <button onClick={handleDelete}>remove</button>
+    <button id="remove-blog-button" onClick={handleDelete}>remove</button>
   )
 
   return (
   <li className="blog">
     <span className="blogDefaults">{blog.title} {blog.author}</span>
 
-    <Togglable buttonLabel="view" closeButtonLabel="hide">
-      <p>
-        {blog.url}<br />
-        likes: {blog.likes}
-        <button onClick={handleLike} className="likeButton">like</button><br />
-        {blog.user.name}<br />
-        
-        {user.username === blog.user.username && removeButton()}
-
-      </p>
+    <Togglable
+      buttonId="show-blog-details-button"
+      buttonLabel="view"
+      closeButtonLabel="hide">
+        <p>
+          {blog.url}<br />
+          <span id='likes'>likes: {blog.likes}</span>
+          <button
+            id="like-button"
+            onClick={handleLike}
+            className="likeButton">
+              like
+          </button><br />
+          {blog.user.name}<br />
+          
+          {user.username === blog.user.username && removeButton()}
+        </p>
     </Togglable>
   </li>
 )}

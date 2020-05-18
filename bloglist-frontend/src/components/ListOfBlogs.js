@@ -1,10 +1,10 @@
 import React from 'react'
 import Blog from './Blog'
 
-const ListOfBlogs = ({ blogs, addLike, deleteBlog, user }) => (
+const ListOfBlogs = ({ id, blogs, addLike, deleteBlog, user }) => (
   <main>
     <h2>Blogs</h2>
-    <ul>
+    <ul id={id}>
       {blogs
         .sort((a, b) => b.likes - a.likes)
         .map(b =>
